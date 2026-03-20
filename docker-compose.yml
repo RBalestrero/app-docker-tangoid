@@ -1,0 +1,101 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: inventory_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d
+      - ./infra/postgres/backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  gateway:
+    build:
+      context: ./app/gateway
+    container_name: gateway
+    restart: unless-stopped
+    env_file:
+      - ./app/gateway/.env
+    depends_on:
+      - auth-service
+      - inventory-service
+    ports:
+      - "${GATEWAY_PORT}:4000"
+
+  auth-service:
+    build:
+      context: ./app/services/auth-service
+    container_name: auth_service
+    restart: unless-stopped
+    env_file:
+      - ./app/services/auth-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${AUTH_SERVICE_PORT}:4001"
+
+  inventory-service:
+    build:
+      context: ./app/services/inventory-service
+    container_name: inventory_service
+    restart: unless-stopped
+    env_file:
+      - ./app/services/inventory-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${INVENTORY_SERVICE_PORT}:4002"
+
+  stock-service:
+    build:
+      context: ./app/services/stock-service
+    container_name: stock_service
+    restart: unless-stopped
+    env_file:
+      - ./app/services/stock-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${STOCK_SERVICE_PORT}:4003"
+
+  warehouse-service:
+    build:
+      context: ./app/services/warehouse-service
+    container_name: warehouse_service
+    restart: unless-stopped
+    env_file:
+      - ./app/services/warehouse-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${WAREHOUSE_SERVICE_PORT}:4004"
+
+  report-service:
+    build:
+      context: ./app/services/report-service
+    container_name: report_service
+    restart: unless-stopped
+    env_file:
+      - ./app/services/report-service/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${REPORT_SERVICE_PORT}:4005"
+
+volumes:
+  postgres_data:

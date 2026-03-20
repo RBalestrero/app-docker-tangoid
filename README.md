@@ -17,6 +17,8 @@ Plataforma de inventario con arquitectura modular y despliegue con Docker.
 - inventory-service
 
 ## Servicios placeholder
+- auth-service
+- inventory-service
 - stock-service
 - warehouse-service
 - report-service

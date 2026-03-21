@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getAuthTest } from '../services/authProxyService.js';
+import { getAuthTest } from '../services/authProxy.service.js';
 
 const router = Router();
 

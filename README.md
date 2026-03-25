@@ -42,6 +42,7 @@ Plataforma de inventario con arquitectura modular y despliegue con Docker.
 - Docker Compose
 - ES Modules
 
+---
 
 # 🚀 Ejecución del proyecto
 
@@ -55,6 +56,8 @@ El proyecto puede ejecutarse en dos modos:
 # 🧪 Modo Desarrollo (DEV)
 
 Este modo está pensado para trabajar localmente sin reconstruir la imagen en cada cambio.
+
+---
 
 ## Levantar entorno de desarrollo
 
@@ -98,7 +101,11 @@ docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
 docker exec -it auth_service sh
 ```
 
+---
+
 # Modo Producción (PROD)
+
+---
 
 ## Primer arranque
 
@@ -149,7 +156,11 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml ps
 docker exec -it auth_service sh
 ```
 
+---
+
 # Flujo Recomendado
+
+---
 
 ## Desarrollo diario
 
@@ -165,7 +176,11 @@ Editar código -> guardar -> cambios automáticos.
 docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build
 ```
 
+---
+
 # Comandos útiles
+
+---
 
 ## Eliminar contenedores, redes y volúmenes
 
@@ -183,5 +198,18 @@ docker system prune -a
 
 ```bash
 docker stats
+```
+
+---
+
+# Base de datos PostgreSQL
+
+---
+
+## Recrear la base de datos eliminando el volumen con init
+
+```bash
+docker compose down -v
+docker compose up --build
 ```
 

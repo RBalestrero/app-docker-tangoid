@@ -1,14 +1,6 @@
 import ordersRepository from '../repositories/orders.repository.js';
 
-export const getOrdersHealthController = async (req, res) => {
-  try {
-    res.json({ status: 'ok', service: 'orders-service', message: 'Orders service is healthy' });
-  } catch (error) {
-    console.error('Error fetching orders health:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-};
-
+const allowedStates = ['Precarga', 'Preparando', 'Hecho', 'Despachado'];
 
 function validateRequiredFields(body) {
   const requiredFields = [
@@ -27,6 +19,21 @@ function validateRequiredFields(body) {
   });
 
   return missing;
+}
+
+function validateEstado(estado) {
+  if (estado === undefined || estado === null || estado === '') {
+    return null;
+  }
+
+  if (!allowedStates.includes(estado)) {
+    return {
+      message: 'Estado inválido',
+      allowedStates,
+    };
+  }
+
+  return null;
 }
 
 async function getAll(req, res) {
@@ -66,6 +73,11 @@ async function create(req, res) {
       });
     }
 
+    const estadoError = validateEstado(req.body.estado);
+    if (estadoError) {
+      return res.status(400).json(estadoError);
+    }
+
     const created = await ordersRepository.create(req.body);
     return res.status(201).json(created);
   } catch (error) {
@@ -73,7 +85,7 @@ async function create(req, res) {
 
     if (error.code === '23503') {
       return res.status(400).json({
-        message: 'El ejecutivo_cuenta_id no existe en users',
+        message: 'Uno de los user_id enviados no existe en users',
       });
     }
 
@@ -93,6 +105,11 @@ async function update(req, res) {
       });
     }
 
+    const estadoError = validateEstado(req.body.estado);
+    if (estadoError) {
+      return res.status(400).json(estadoError);
+    }
+
     const updated = await ordersRepository.update(id, req.body);
 
     if (!updated) {
@@ -105,7 +122,7 @@ async function update(req, res) {
 
     if (error.code === '23503') {
       return res.status(400).json({
-        message: 'El ejecutivo_cuenta_id no existe en users',
+        message: 'Uno de los user_id enviados no existe en users',
       });
     }
 
@@ -122,7 +139,10 @@ async function remove(req, res) {
       return res.status(404).json({ message: 'Pedido no encontrado' });
     }
 
-    return res.status(200).json({ message: 'Pedido eliminado', id: deleted.id });
+    return res.status(200).json({
+      message: 'Pedido eliminado',
+      id: deleted.id,
+    });
   } catch (error) {
     console.error('[orders.controller][remove]', error);
     return res.status(500).json({ message: 'Error al eliminar pedido' });
@@ -130,7 +150,6 @@ async function remove(req, res) {
 }
 
 export default {
-  getOrdersHealthController,
   getAll,
   getById,
   create,

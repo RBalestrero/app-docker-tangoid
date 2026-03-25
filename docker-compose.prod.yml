@@ -34,9 +34,9 @@ services:
     environment:
       NODE_ENV: production
 
-  report-service:
+  users-service:
     build:
-      context: ./app/services/report-service
+      context: ./app/services/users-service
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production

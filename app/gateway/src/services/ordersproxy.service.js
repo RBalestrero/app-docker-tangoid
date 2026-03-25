@@ -12,16 +12,6 @@ export const getOrdersTest = async () => {
   }
 };
 
-export const getUsers = async () => {
-  try {
-    const response = await axios.get(`${ORDERS_SERVICE_URL}/users`);
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching orders users:', error);
-    throw error;
-  }
-};
-
 export const getOrders = async () => {
   try {
     const response = await axios.get(`${ORDERS_SERVICE_URL}/orders`);

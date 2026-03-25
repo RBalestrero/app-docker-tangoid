@@ -59,12 +59,12 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
 
-  report-service:
+  users-service:
     build:
-      context: ./app/services/report-service
+      context: ./app/services/users-service
       dockerfile: Dockerfile.dev
     volumes:
-      - ./app/services/report-service:/app
+      - ./app/services/users-service:/app
       - /app/node_modules
     command: npm run dev
     environment:

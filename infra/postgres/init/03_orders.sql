@@ -12,10 +12,10 @@ CREATE TABLE IF NOT EXISTS orders (
     numero_factura VARCHAR(100) NOT NULL,
     tipo_envio_retiro VARCHAR(100) NOT NULL,
 
-    -- Operativos
-    hecho BOOLEAN DEFAULT FALSE,
-    despachado_recibido BOOLEAN DEFAULT FALSE,
+    -- Estado del pedido
+    estado estado_pedido NOT NULL DEFAULT 'Precarga',
 
+    -- Operativos
     metodo_envio_retiro VARCHAR(150),
 
     nombre_apellido VARCHAR(255),
@@ -40,21 +40,51 @@ CREATE TABLE IF NOT EXISTS orders (
     bultos INTEGER,
 
     correo_depo_enviado BOOLEAN DEFAULT FALSE,
-    confirmo_pedido BOOLEAN DEFAULT FALSE,
-    despacho_recibio BOOLEAN DEFAULT FALSE,
-    preparo_pedido BOOLEAN DEFAULT FALSE,
-    pagado BOOLEAN DEFAULT FALSE,
+
+    -- Logs de auditoría por acción
+    confirmado_por_id BIGINT,
+    confirmado_at TIMESTAMP,
+
+    preparado_por_id BIGINT,
+    preparado_at TIMESTAMP,
+
+    despachado_por_id BIGINT,
+    despachado_at TIMESTAMP,
+
+    pagado_por_id BIGINT,
+    pagado_at TIMESTAMP,
 
     external_id VARCHAR(100),
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
-    -- Relación con users
+    -- Relación con users: ejecutivo de cuenta
     CONSTRAINT fk_orders_user
     FOREIGN KEY (ejecutivo_cuenta_id)
     REFERENCES users(id)
-    ON DELETE RESTRICT
+    ON DELETE RESTRICT,
+
+    -- Relación con users: logs
+    CONSTRAINT fk_orders_confirmado_por
+    FOREIGN KEY (confirmado_por_id)
+    REFERENCES users(id)
+    ON DELETE SET NULL,
+
+    CONSTRAINT fk_orders_preparado_por
+    FOREIGN KEY (preparado_por_id)
+    REFERENCES users(id)
+    ON DELETE SET NULL,
+
+    CONSTRAINT fk_orders_despachado_por
+    FOREIGN KEY (despachado_por_id)
+    REFERENCES users(id)
+    ON DELETE SET NULL,
+
+    CONSTRAINT fk_orders_pagado_por
+    FOREIGN KEY (pagado_por_id)
+    REFERENCES users(id)
+    ON DELETE SET NULL
 );
 
 -- Índices importantes
@@ -62,4 +92,9 @@ CREATE INDEX IF NOT EXISTS idx_orders_fecha ON orders(fecha);
 CREATE INDEX IF NOT EXISTS idx_orders_remito ON orders(numero_remito);
 CREATE INDEX IF NOT EXISTS idx_orders_factura ON orders(numero_factura);
 CREATE INDEX IF NOT EXISTS idx_orders_user ON orders(ejecutivo_cuenta_id);
-CREATE INDEX IF NOT EXISTS idx_orders_estado ON orders(despachado_recibido, pagado);
+CREATE INDEX IF NOT EXISTS idx_orders_estado ON orders(estado);
+
+CREATE INDEX IF NOT EXISTS idx_orders_confirmado_por_id ON orders(confirmado_por_id);
+CREATE INDEX IF NOT EXISTS idx_orders_preparado_por_id ON orders(preparado_por_id);
+CREATE INDEX IF NOT EXISTS idx_orders_despachado_por_id ON orders(despachado_por_id);
+CREATE INDEX IF NOT EXISTS idx_orders_pagado_por_id ON orders(pagado_por_id);

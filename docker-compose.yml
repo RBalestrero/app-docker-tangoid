@@ -84,18 +84,18 @@ services:
     ports:
       - "${WAREHOUSE_SERVICE_PORT}:4004"
 
-  report-service:
+  users-service:
     build:
-      context: ./app/services/report-service
-    container_name: report_service
+      context: ./app/services/users-service
+    container_name: users_service
     restart: unless-stopped
     env_file:
-      - ./app/services/report-service/.env
+      - ./app/services/users-service/.env
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "${REPORT_SERVICE_PORT}:4005"
+      - "${USERS_SERVICE_PORT}:4005"
 
 volumes:
   postgres_data:

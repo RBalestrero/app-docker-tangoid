@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import ordersRoutes from './routes/orders.routes.js';
-import usersRoutes from './routes/users.routes.js';
 
 const app = express();
 
@@ -13,6 +12,6 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/orders', ordersRoutes);
-app.use('/users', usersRoutes);
+
 
 export default app;

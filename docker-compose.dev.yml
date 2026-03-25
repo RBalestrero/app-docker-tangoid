@@ -23,12 +23,12 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
 
-  inventory-service:
+  orders-service:
     build:
-      context: ./app/services/inventory-service
+      context: ./app/services/orders-service
       dockerfile: Dockerfile.dev
     volumes:
-      - ./app/services/inventory-service:/app
+      - ./app/services/orders-service:/app
       - /app/node_modules
     command: npm run dev
     environment:

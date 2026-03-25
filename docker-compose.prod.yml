@@ -13,9 +13,9 @@ services:
     environment:
       NODE_ENV: production
 
-  inventory-service:
+  orders-service:
     build:
-      context: ./app/services/inventory-service
+      context: ./app/services/orders-service
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production

@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import authRoutes from './routes/auth.routes.js';
-import inventoryRoutes from './routes/inventory.routes.js';
+import ordersRoutes from './routes/orders.routes.js';
 
 const app = express();
 
@@ -13,6 +13,6 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/auth', authRoutes);
-app.use('/inventory', inventoryRoutes);
+app.use('/orders', ordersRoutes);
 
 export default app;

@@ -1,0 +1,42 @@
+services:
+  gateway:
+    build:
+      context: ./app/gateway
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+  auth-service:
+    build:
+      context: ./app/services/auth-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+  inventory-service:
+    build:
+      context: ./app/services/inventory-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+  stock-service:
+    build:
+      context: ./app/services/stock-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+  warehouse-service:
+    build:
+      context: ./app/services/warehouse-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+
+  report-service:
+    build:
+      context: ./app/services/report-service
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production

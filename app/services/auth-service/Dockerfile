@@ -3,10 +3,10 @@ FROM node:20-alpine
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install
+RUN npm install --omit=dev
 
-COPY src ./src
+COPY . .
 
-EXPOSE 4002
+EXPOSE 4001
 
 CMD ["npm", "start"]

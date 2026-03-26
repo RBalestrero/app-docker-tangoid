@@ -5,17 +5,13 @@ const getAuthToken = async (req, res) => {
   try {
 
     const { username, password } = req.body;
-    console.log('Login attempt:', { username, password });
 
     const userInfo = await usersService.getUserByEmail(username);
-
-    //console.log('User info retrieved:', userInfo);
 
     if (!userInfo) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
     }
 
-    //console.log('Login attempt:', { username, password, nombre: userInfo.nombre, apellido: userInfo.apellido, rol: userInfo.rol });
     const response = await authService.getAuthToken(username, password, userInfo.nombre, userInfo.apellido, userInfo.rol);
     res.status(200).json({
       token: response.token,

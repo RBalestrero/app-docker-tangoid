@@ -19,6 +19,14 @@ services:
       timeout: 5s
       retries: 5
 
+  frontend:
+    build:
+      context: ./app/frontend
+    container_name: frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT}:5173"
+
   gateway:
     build:
       context: ./app/gateway

@@ -13,8 +13,8 @@ app.get('/health', (req, res) => {
   res.json({ service: 'gateway', status: 'ok' });
 });
 
-app.use('/auth', authRoutes);
-app.use('/orders', ordersRoutes);
-app.use('/users', usersRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/users', usersRoutes);
 
 export default app;

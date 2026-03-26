@@ -7,7 +7,7 @@ export function verifyToken(req, res, next) {
     // 1. Verificar existencia
     if (!authHeader) {
       return res.status(401).json({
-        error: 'Token requerido',
+        error: 'Acceso denegado: no autorizado',
       });
     }
 
@@ -57,7 +57,7 @@ export function verifyToken(req, res, next) {
     }
 
     return res.status(403).json({
-      error: 'No autorizado',
+      error: 'Acceso denegado: no autorizado',
     });
   }
 }

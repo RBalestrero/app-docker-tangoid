@@ -43,7 +43,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${AUTH_SERVICE_PORT}:4001"
+      - "${AUTH_SERVICE_PORT}"
 
   orders-service:
     build:
@@ -56,7 +56,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${ORDERS_SERVICE_PORT}:4002"
+      - "${ORDERS_SERVICE_PORT}"
 
   stock-service:
     build:
@@ -69,7 +69,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${STOCK_SERVICE_PORT}:4003"
+      - "${STOCK_SERVICE_PORT}"
 
   warehouse-service:
     build:
@@ -82,7 +82,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${WAREHOUSE_SERVICE_PORT}:4004"
+      - "${WAREHOUSE_SERVICE_PORT}"
 
   users-service:
     build:
@@ -95,7 +95,7 @@ services:
       postgres:
         condition: service_healthy
     ports:
-      - "${USERS_SERVICE_PORT}:4005"
+      - "${USERS_SERVICE_PORT}"
 
 volumes:
   postgres_data:

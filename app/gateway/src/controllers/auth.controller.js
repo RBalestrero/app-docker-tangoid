@@ -1,11 +1,11 @@
-import { getAuthTest, getAuthToken } from '../services/authProxy.service.js';
+import service from '../services/authProxy.service.js';
 
-export const loginController = async (req, res) => {
+const getAuthToken = async (req, res) => {
   try {
 
     const { username, password } = req.body;
     console.log('Login attempt:', { username, password });
-    const response = await getAuthToken(username, password);
+    const response = await service.getAuthToken(username, password);
     res.status(200).json({
       token: response.token,
     });
@@ -17,9 +17,9 @@ export const loginController = async (req, res) => {
   }
 };
 
-export const testController = async (req, res) => {
+const testController = async (req, res) => {
   try {
-    const data = await getAuthTest();
+    const data = await service.getAuthTest();
     res.json({
       gateway: 'ok',
       upstream: data,
@@ -32,10 +32,16 @@ export const testController = async (req, res) => {
   }
 };
 
-export const testTokenController = async (req, res) => {
+const testTokenController = async (req, res) => {
   res.json({
     message: 'Acceso a ruta protegida concedido',
     user: req.user.username,
     password: req.user.password,
   });
+};
+
+export default {
+  getAuthToken,
+  testController,
+  testTokenController,
 };

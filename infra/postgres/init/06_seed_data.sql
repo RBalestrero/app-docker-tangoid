@@ -8,7 +8,8 @@ VALUES
 ('Ana', 'Gomez', 'ana.gomez@empresa.com', 'comercial'),
 ('Luis', 'Martinez', 'luis.martinez@empresa.com', 'admin'),
 ('Carla', 'Lopez', 'carla.lopez@empresa.com', 'comercial'),
-('Diego', 'Fernandez', 'diego.fernandez@empresa.com', 'depo');
+('Diego', 'Fernandez', 'diego.fernandez@empresa.com', 'depo'),
+('Sofia', 'Ruiz', 'sofia.ruiz@empresa.com', 'soporte');
 
 -- =========================
 -- SEED DATA - ORDERS
@@ -212,4 +213,52 @@ VALUES
     NULL,
     NULL,
     'EXT-005'
+);
+
+-- =========================
+-- SEED DATA - DEVOLUCIONES
+-- =========================
+
+INSERT INTO devoluciones (
+    order_id,
+    cliente,
+    numero_operacion,
+    razon,
+    remito,
+    condicion,
+    vuelva_a_la_venta,
+    observaciones,
+    ubicacion,
+    testeado,
+    ejecutivo_id,
+    tecnico_id
+)
+VALUES
+(
+    1,
+    'Tech Solutions SA',
+    'OP-DEV-0001',
+    'Producto con falla al encender',
+    'REM-1001',
+    'Mal',
+    false,
+    'Equipo recibido sin funcionamiento. Pendiente revisión técnica.',
+    'soporte',
+    false,
+    1,
+    6
+),
+(
+    2,
+    'Distribuidora Norte SRL',
+    'OP-DEV-0002',
+    'Devolución comercial por error de compra',
+    'REM-1002',
+    'Bien',
+    true,
+    'Producto en buen estado, apto para volver a la venta.',
+    'deposito',
+    true,
+    2,
+    6
 );

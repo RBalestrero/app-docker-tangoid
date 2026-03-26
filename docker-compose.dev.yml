@@ -35,12 +35,12 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
 
-  stock-service:
+  returns-service:
     build:
-      context: ./app/services/stock-service
+      context: ./app/services/returns-service
       dockerfile: Dockerfile.dev
     volumes:
-      - ./app/services/stock-service:/app
+      - ./app/services/returns-service:/app
       - /app/node_modules
     command: npm run dev
     environment:

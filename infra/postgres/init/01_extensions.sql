@@ -13,4 +13,22 @@ BEGIN
             'Despachado'
         );
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type WHERE typname = 'condicion_producto'
+    ) THEN
+        CREATE TYPE condicion_producto AS ENUM (
+            'Bien',
+            'Mal'
+        );
+    END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type WHERE typname = 'ubicacion_producto'
+    ) THEN
+        CREATE TYPE ubicacion_producto AS ENUM (
+            'deposito',
+            'soporte'
+        );
+    END IF;
 END$$;

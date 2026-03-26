@@ -20,9 +20,9 @@ services:
     environment:
       NODE_ENV: production
 
-  stock-service:
+  returns-service:
     build:
-      context: ./app/services/stock-service
+      context: ./app/services/returns-service
       dockerfile: Dockerfile
     environment:
       NODE_ENV: production

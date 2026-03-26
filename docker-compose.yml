@@ -58,18 +58,18 @@ services:
     ports:
       - "${ORDERS_SERVICE_PORT}"
 
-  stock-service:
+  returns-service:
     build:
-      context: ./app/services/stock-service
-    container_name: stock_service
+      context: ./app/services/returns-service
+    container_name: returns_service
     restart: unless-stopped
     env_file:
-      - ./app/services/stock-service/.env
+      - ./app/services/returns-service/.env
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "${STOCK_SERVICE_PORT}"
+      - "${RETURNS_SERVICE_PORT}"
 
   warehouse-service:
     build:

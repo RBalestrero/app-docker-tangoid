@@ -31,4 +31,17 @@ BEGIN
             'soporte'
         );
     END IF;
+
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_type WHERE typname = 'user_rol'
+    ) THEN
+        CREATE TYPE user_rol AS ENUM (
+            'administrador',
+            'deposito',
+            'soporte',
+            'comercial',
+            'administrativo',
+            'invitado'
+        );
+    END IF;
 END$$;

@@ -4,6 +4,7 @@ import controller from '../controllers/users.controller.js';
 const router = Router();
 
 router.get('/', controller.getAll);
+router.get('/email/:email', controller.getByEmail);
 router.get('/:id', controller.getById);
 router.post('/', controller.create);
 router.put('/:id', controller.update);

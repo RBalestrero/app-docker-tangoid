@@ -1,10 +1,10 @@
-import { getAuthTest, getAuthToken } from "../services/auth.service.js";
+import service from "../services/auth.service.js";
 
-export const loginController = async (req, res) => {
+const loginController = async (req, res) => {
   try {
-    const { username, password } = req.query;
-    console.log("Login attempt:", { username, password });
-    const response = await getAuthToken(username, password);
+    const { username, password, nombre, apellido, rol } = req.query;
+    //console.log("Login attempt:", { username, password, nombre, apellido, rol });
+    const response = await service.getAuthToken(username, password, nombre, apellido, rol);
     res.status(200).json({
       token: response.token,
     });
@@ -14,4 +14,8 @@ export const loginController = async (req, res) => {
       detail: error.message,
     });
   }
+};
+
+export default {
+  loginController,
 };

@@ -51,10 +51,21 @@ const deleteUser = async (id) => {
   }
 };
 
+const getUserByEmail = async (email) => {
+  try {
+    const response = await axios.get(`${USERS_SERVICE_URL}/users/email/${email}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching user by email:', error);
+    throw error;
+  }
+};
+
 export default {
   getUsers,
   getUserById,
   createUser,
   updateUser,
   deleteUser,
+  getUserByEmail,
 };

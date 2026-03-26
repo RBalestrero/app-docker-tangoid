@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users (
     apellido VARCHAR(150) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
 
-    rol VARCHAR(50),
+    rol user_rol NOT NULL DEFAULT 'invitado',
     activo BOOLEAN DEFAULT TRUE,
 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

@@ -1,11 +1,22 @@
-import service from '../services/authProxy.service.js';
+import authService from '../services/authProxy.service.js';
+import usersService from '../services/usersProxy.service.js';
 
 const getAuthToken = async (req, res) => {
   try {
 
     const { username, password } = req.body;
     console.log('Login attempt:', { username, password });
-    const response = await service.getAuthToken(username, password);
+
+    const userInfo = await usersService.getUserByEmail(username);
+
+    //console.log('User info retrieved:', userInfo);
+
+    if (!userInfo) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    //console.log('Login attempt:', { username, password, nombre: userInfo.nombre, apellido: userInfo.apellido, rol: userInfo.rol });
+    const response = await authService.getAuthToken(username, password, userInfo.nombre, userInfo.apellido, userInfo.rol);
     res.status(200).json({
       token: response.token,
     });
@@ -19,7 +30,7 @@ const getAuthToken = async (req, res) => {
 
 const testController = async (req, res) => {
   try {
-    const data = await service.getAuthTest();
+    const data = await authService.getAuthTest();
     res.json({
       gateway: 'ok',
       upstream: data,
@@ -37,6 +48,9 @@ const testTokenController = async (req, res) => {
     message: 'Acceso a ruta protegida concedido',
     user: req.user.username,
     password: req.user.password,
+    nombre: req.user.nombre,
+    apellido: req.user.apellido,
+    rol: req.user.rol,
   });
 };
 

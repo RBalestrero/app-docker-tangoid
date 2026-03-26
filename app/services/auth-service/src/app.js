@@ -1,14 +1,17 @@
 import express from 'express';
 import cors from 'cors';
+import helthRoutes from './routes/health.routes.js';
+import authRoutes from './routes/auth.routes.js';
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-app.get('/health', (req, res) => {
-  res.json({ service: 'auth-service', status: 'ok' });
-});
+
+app.use("/health", helthRoutes);
+app.use('/auth', authRoutes);
+
 
 app.get('/auth/test', (req, res) => {
   res.json({

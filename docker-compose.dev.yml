@@ -1,0 +1,72 @@
+services:
+  gateway:
+    build:
+      context: ./app/gateway
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/gateway:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+
+  auth-service:
+    build:
+      context: ./app/services/auth-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/services/auth-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+
+  orders-service:
+    build:
+      context: ./app/services/orders-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/services/orders-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+
+  stock-service:
+    build:
+      context: ./app/services/stock-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/services/stock-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+
+  warehouse-service:
+    build:
+      context: ./app/services/warehouse-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/services/warehouse-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"
+
+  users-service:
+    build:
+      context: ./app/services/users-service
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./app/services/users-service:/app
+      - /app/node_modules
+    command: npm run dev
+    environment:
+      NODE_ENV: development
+      CHOKIDAR_USEPOLLING: "true"

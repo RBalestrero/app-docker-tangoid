@@ -28,7 +28,7 @@ services:
       - ./app/gateway/.env
     depends_on:
       - auth-service
-      - inventory-service
+      - orders-service
     ports:
       - "${GATEWAY_PORT}:4000"
 
@@ -45,18 +45,18 @@ services:
     ports:
       - "${AUTH_SERVICE_PORT}:4001"
 
-  inventory-service:
+  orders-service:
     build:
-      context: ./app/services/inventory-service
-    container_name: inventory_service
+      context: ./app/services/orders-service
+    container_name: orders_service
     restart: unless-stopped
     env_file:
-      - ./app/services/inventory-service/.env
+      - ./app/services/orders-service/.env
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "${INVENTORY_SERVICE_PORT}:4002"
+      - "${ORDERS_SERVICE_PORT}:4002"
 
   stock-service:
     build:
@@ -84,18 +84,18 @@ services:
     ports:
       - "${WAREHOUSE_SERVICE_PORT}:4004"
 
-  report-service:
+  users-service:
     build:
-      context: ./app/services/report-service
-    container_name: report_service
+      context: ./app/services/users-service
+    container_name: users_service
     restart: unless-stopped
     env_file:
-      - ./app/services/report-service/.env
+      - ./app/services/users-service/.env
     depends_on:
       postgres:
         condition: service_healthy
     ports:
-      - "${REPORT_SERVICE_PORT}:4005"
+      - "${USERS_SERVICE_PORT}:4005"
 
 volumes:
   postgres_data:

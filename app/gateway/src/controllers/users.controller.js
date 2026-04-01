@@ -24,11 +24,12 @@ const getUserById = async (req, res) => {
 const createUser = async (req, res) => {
   try {
     const newUser = req.body;
+    console.log('Creating user with data (gateway):', newUser);
     const response = await usersService.createUser(newUser);
     res.status(201).json(response);
   } catch (error) {
     console.error('Error creating user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(error.response?.status || 500).json({ error: error.response?.data || { error: 'Internal Server Error' } });
   }
 };
 

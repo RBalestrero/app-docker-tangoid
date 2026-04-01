@@ -24,7 +24,9 @@ const getUserById = async (id) => {
 
 const createUser = async (userData) => {
   try {
+    console.log("DATOS DE USUARIO A CREAR: ",userData);
     const response = await axios.post(`${USERS_SERVICE_URL}/users`, userData);
+    console.log("DATOS DE USUARIO CREADO: ", response.data);
     return response.data;
   } catch (error) {
     console.error('Error creating user:', error);
@@ -53,6 +55,7 @@ const deleteUser = async (id) => {
 
 const getUserByEmail = async (email) => {
   try {
+    console.log("EMAIL PARA BUSCAR USUARIO: ", email);
     const response = await axios.get(`${USERS_SERVICE_URL}/users/email/${email}`);
     return response.data;
   } catch (error) {

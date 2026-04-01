@@ -21,9 +21,9 @@ BEFORE UPDATE ON users
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();
 
--- Trigger para devoluciones
-DROP TRIGGER IF EXISTS trg_update_devoluciones_updated_at ON devoluciones;
-CREATE TRIGGER trg_update_devoluciones_updated_at
-BEFORE UPDATE ON devoluciones
+-- Trigger para returns
+DROP TRIGGER IF EXISTS trg_update_returns_updated_at ON returns;
+CREATE TRIGGER trg_update_returns_updated_at
+BEFORE UPDATE ON returns
 FOR EACH ROW
 EXECUTE FUNCTION update_updated_at_column();

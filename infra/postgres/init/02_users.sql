@@ -6,6 +6,9 @@ CREATE TABLE IF NOT EXISTS users (
     apellido VARCHAR(150) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
 
+    password TEXT NOT NULL CHECK (password ~ '^[a-zA-Z0-9]{8,}$'),
+    salt TEXT NOT NULL,
+
     rol user_rol NOT NULL DEFAULT 'invitado',
     activo BOOLEAN DEFAULT TRUE,
 

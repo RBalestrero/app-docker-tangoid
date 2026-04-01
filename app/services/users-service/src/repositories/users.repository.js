@@ -10,6 +10,8 @@ async function getAll() {
       email,
       rol,
       activo,
+      password,
+      salt,
       created_at,
       updated_at
     FROM users
@@ -41,16 +43,18 @@ async function getById(id) {
 
 async function create(user) {
   const query = `
-    INSERT INTO users (nombre, apellido, email, rol, activo)
-    VALUES ($1, $2, $3, $4, $5)
-    RETURNING id, uuid, nombre, apellido, email, rol, activo, created_at, updated_at
+    INSERT INTO users (nombre, apellido, email, rol, password, salt)
+    VALUES ($1, $2, $3, $4, $5, $6)
+    RETURNING id, uuid, nombre, apellido, email, rol, created_at, updated_at
   `;
   const values = [
     user.nombre,
     user.apellido,
     user.email,
     user.rol,
-    user.activo,
+    user.password,
+    user.salt,
+    // user.activo, // No se inserta el campo activo, se asume true por defecto
   ];
   const { rows } = await pool.query(query, values);
   return rows[0];

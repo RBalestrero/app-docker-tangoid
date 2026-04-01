@@ -2,14 +2,14 @@
 -- SEED DATA - USERS
 -- =========================
 
-INSERT INTO users (nombre, apellido, email, rol)
+INSERT INTO users (nombre, apellido, email, rol, password, salt)
 VALUES
-('Juan', 'Perez', 'juan.perez@empresa.com', 'comercial'),
-('Ana', 'Gomez', 'ana.gomez@empresa.com', 'comercial'),
-('Luis', 'Martinez', 'luis.martinez@empresa.com', 'admin'),
-('Carla', 'Lopez', 'carla.lopez@empresa.com', 'comercial'),
-('Diego', 'Fernandez', 'diego.fernandez@empresa.com', 'depo'),
-('Sofia', 'Ruiz', 'sofia.ruiz@empresa.com', 'soporte');
+('Juan', 'Perez', 'juan.perez@empresa.com', 'comercial', 'passwoVrd123', 'salt123'),
+('Ana', 'Gomez', 'ana.gomez@empresa.com', 'comercial', 'passwoVrd123', 'salt123'),
+('Luis', 'Martinez', 'luis.martinez@empresa.com', 'administrador', 'passwVord123', 'salt123'),
+('Carla', 'Lopez', 'carla.lopez@empresa.com', 'deposito', 'pasVsword123', 'salt123'),
+('Diego', 'Fernandez', 'diego.fernandez@empresa.com', 'deposito', 'passwVord123', 'salt123'),
+('Sofia', 'Ruiz', 'sofia.ruiz@empresa.com', 'soporte', 'passworVd123', 'salt123');
 
 -- =========================
 -- SEED DATA - ORDERS
@@ -219,7 +219,7 @@ VALUES
 -- SEED DATA - DEVOLUCIONES
 -- =========================
 
-INSERT INTO devoluciones (
+INSERT INTO returns (
     order_id,
     cliente,
     numero_operacion,

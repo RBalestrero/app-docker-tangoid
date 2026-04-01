@@ -29,6 +29,7 @@ async function getById(req, res) {
 async function create(req, res) {
   try {
     const newUser = req.body;
+    console.log('Creating user with data:', newUser);
     const createdUser = await usersRepository.create(newUser);
     return res.status(201).json(createdUser);
   } catch (error) {

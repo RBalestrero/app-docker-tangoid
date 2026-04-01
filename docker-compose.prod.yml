@@ -6,6 +6,17 @@ services:
     environment:
       NODE_ENV: production
 
+  frontend:
+    build:
+      context: ./app/frontend
+      dockerfile: Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - "${FRONTEND_PORT}:80"
+    depends_on:
+      - gateway
+
   auth-service:
     build:
       context: ./app/services/auth-service

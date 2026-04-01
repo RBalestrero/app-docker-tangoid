@@ -4,7 +4,9 @@ import usersService from '../services/usersProxy.service.js';
 const getAuthToken = async (req, res) => {
   try {
 
-    const { username, password } = req.body;
+    const { username, password } = req.params;
+    console.log('Auth request body:', req.params);
+    console.log('Received auth request for username:', username);
 
     const userInfo = await usersService.getUserByEmail(username);
 

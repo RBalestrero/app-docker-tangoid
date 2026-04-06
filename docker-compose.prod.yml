@@ -38,13 +38,6 @@ services:
     environment:
       NODE_ENV: production
 
-  warehouse-service:
-    build:
-      context: ./app/services/warehouse-service
-      dockerfile: Dockerfile
-    environment:
-      NODE_ENV: production
-
   users-service:
     build:
       context: ./app/services/users-service

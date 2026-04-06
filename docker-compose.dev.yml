@@ -61,18 +61,6 @@ services:
       NODE_ENV: development
       CHOKIDAR_USEPOLLING: "true"
 
-  warehouse-service:
-    build:
-      context: ./app/services/warehouse-service
-      dockerfile: Dockerfile.dev
-    volumes:
-      - ./app/services/warehouse-service:/app
-      - /app/node_modules
-    command: npm run dev
-    environment:
-      NODE_ENV: development
-      CHOKIDAR_USEPOLLING: "true"
-
   users-service:
     build:
       context: ./app/services/users-service

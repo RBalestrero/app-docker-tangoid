@@ -41,15 +41,13 @@ services:
       - ./app/gateway/.env
     depends_on:
       auth-service:
-        condition: service_started
+        condition: service_healthy
       orders-service:
-        condition: service_started
+        condition: service_healthy
       returns-service:
-        condition: service_started
-      warehouse-service:
-        condition: service_started
+        condition: service_healthy
       users-service:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "${GATEWAY_PORT}:4000"
     healthcheck:
@@ -115,26 +113,6 @@ services:
       - "4003"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:4003/health || exit 1"]
-      interval: 15s
-      timeout: 5s
-      retries: 5
-    networks:
-      - internal
-
-  warehouse-service:
-    build:
-      context: ./app/services/warehouse-service
-    container_name: warehouse_service
-    restart: unless-stopped
-    env_file:
-      - ./app/services/warehouse-service/.env
-    depends_on:
-      postgres:
-        condition: service_healthy
-    expose:
-      - "4004"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:4004/health || exit 1"]
       interval: 15s
       timeout: 5s
       retries: 5

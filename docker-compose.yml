@@ -18,6 +18,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
 
   frontend:
     build:
@@ -25,7 +27,10 @@ services:
     container_name: frontend
     restart: unless-stopped
     depends_on:
-      - gateway
+      gateway:
+        condition: service_started
+    networks:
+      - edge
 
   gateway:
     build:
@@ -35,10 +40,26 @@ services:
     env_file:
       - ./app/gateway/.env
     depends_on:
-      - auth-service
-      - orders-service
+      auth-service:
+        condition: service_started
+      orders-service:
+        condition: service_started
+      returns-service:
+        condition: service_started
+      warehouse-service:
+        condition: service_started
+      users-service:
+        condition: service_started
     ports:
       - "${GATEWAY_PORT}:4000"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4000/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - edge
+      - internal
 
   auth-service:
     build:
@@ -50,6 +71,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    expose:
+      - "4001"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4001/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
   orders-service:
     build:
@@ -61,6 +91,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    expose:
+      - "4002"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4002/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
   returns-service:
     build:
@@ -72,6 +111,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    expose:
+      - "4003"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4003/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
   warehouse-service:
     build:
@@ -83,6 +131,15 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    expose:
+      - "4004"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4004/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
   users-service:
     build:
@@ -94,6 +151,20 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    expose:
+      - "4005"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:4005/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
 
 volumes:
   postgres_data:
+
+networks:
+  edge:
+  internal:
+    internal: true

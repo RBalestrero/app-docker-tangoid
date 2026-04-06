@@ -44,13 +44,134 @@ const baseSelect = `
   JOIN users u ON u.id = o.ejecutivo_cuenta_id
 `;
 
-async function getAll() {
-  const query = `
-    ${baseSelect}
-    ORDER BY o.id DESC
+function buildWhereClause(filters = {}) {
+  const conditions = [];
+  const values = [];
+
+  if (filters.estado) {
+    values.push(filters.estado);
+    conditions.push(`o.estado = $${values.length}`);
+  }
+
+  if (filters.tipo_envio_retiro) {
+    values.push(filters.tipo_envio_retiro);
+    conditions.push(`o.tipo_envio_retiro = $${values.length}`);
+  }
+
+  if (filters.plataforma_venta) {
+    values.push(filters.plataforma_venta);
+    conditions.push(`o.plataforma_venta = $${values.length}`);
+  }
+
+  if (filters.ejecutivo_cuenta_id !== undefined && filters.ejecutivo_cuenta_id !== null && filters.ejecutivo_cuenta_id !== '') {
+    values.push(Number(filters.ejecutivo_cuenta_id));
+    conditions.push(`o.ejecutivo_cuenta_id = $${values.length}`);
+  }
+
+  if (filters.numero_remito) {
+    values.push(filters.numero_remito);
+    conditions.push(`o.numero_remito = $${values.length}`);
+  }
+
+  if (filters.numero_factura) {
+    values.push(filters.numero_factura);
+    conditions.push(`o.numero_factura = $${values.length}`);
+  }
+
+  if (filters.external_id) {
+    values.push(filters.external_id);
+    conditions.push(`o.external_id = $${values.length}`);
+  }
+
+  if (filters.fecha_desde) {
+    values.push(filters.fecha_desde);
+    conditions.push(`o.fecha >= $${values.length}`);
+  }
+
+  if (filters.fecha_hasta) {
+    values.push(filters.fecha_hasta);
+    conditions.push(`o.fecha <= $${values.length}`);
+  }
+
+  if (filters.created_desde) {
+    values.push(filters.created_desde);
+    conditions.push(`o.created_at >= $${values.length}`);
+  }
+
+  if (filters.created_hasta) {
+    values.push(filters.created_hasta);
+    conditions.push(`o.created_at <= $${values.length}`);
+  }
+
+  if (filters.search) {
+    values.push(`%${filters.search}%`);
+    const searchParam = `$${values.length}`;
+
+    conditions.push(`
+      (
+        o.razon_social ILIKE ${searchParam}
+        OR o.numero_remito ILIKE ${searchParam}
+        OR o.numero_factura ILIKE ${searchParam}
+        OR o.destinatario ILIKE ${searchParam}
+        OR o.nombre_apellido ILIKE ${searchParam}
+        OR o.guia_direccion ILIKE ${searchParam}
+        OR o.transporte ILIKE ${searchParam}
+        OR o.estado ILIKE ${searchParam}
+        OR o.tipo_envio_retiro ILIKE ${searchParam}
+        OR o.plataforma_venta ILIKE ${searchParam}
+        OR u.nombre ILIKE ${searchParam}
+        OR u.apellido ILIKE ${searchParam}
+        OR CONCAT(u.nombre, ' ', u.apellido) ILIKE ${searchParam}
+      )
+    `);
+  }
+
+  const whereClause = conditions.length > 0
+    ? `WHERE ${conditions.join(' AND ')}`
+    : '';
+
+  return { whereClause, values };
+}
+
+async function getAll(filters = {}) {
+  const page = Math.max(Number(filters.page) || 1, 1);
+  const limit = Math.min(Math.max(Number(filters.limit) || 20, 1), 100);
+  const offset = (page - 1) * limit;
+
+  const { whereClause, values } = buildWhereClause(filters);
+
+  const countQuery = `
+    SELECT COUNT(*) AS total
+    FROM orders o
+    JOIN users u ON u.id = o.ejecutivo_cuenta_id
+    ${whereClause}
   `;
-  const { rows } = await pool.query(query);
-  return rows;
+
+  const dataQuery = `
+    ${baseSelect}
+    ${whereClause}
+    ORDER BY o.id DESC
+    LIMIT $${values.length + 1}
+    OFFSET $${values.length + 2}
+  `;
+
+  const countResult = await pool.query(countQuery, values);
+  const total = Number(countResult.rows[0].total);
+
+  const dataValues = [...values, limit, offset];
+  const { rows } = await pool.query(dataQuery, dataValues);
+
+  return {
+    data: rows,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      hasNextPage: page < Math.ceil(total / limit),
+      hasPrevPage: page > 1,
+    },
+  };
 }
 
 async function getById(id) {

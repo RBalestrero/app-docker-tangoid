@@ -38,8 +38,50 @@ function validateEstado(estado) {
 
 async function getAll(req, res) {
   try {
-    const orders = await ordersRepository.getAll();
-    return res.status(200).json(orders);
+    const {
+      page = '1',
+      limit = '20',
+      estado,
+      tipo_envio_retiro,
+      plataforma_venta,
+      ejecutivo_cuenta_id,
+      numero_remito,
+      numero_factura,
+      external_id,
+      fecha_desde,
+      fecha_hasta,
+      created_desde,
+      created_hasta,
+      search,
+    } = req.query;
+
+    const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
+    const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
+
+    const rawFilters = {
+      estado,
+      tipo_envio_retiro,
+      plataforma_venta,
+      ejecutivo_cuenta_id,
+      numero_remito,
+      numero_factura,
+      external_id,
+      fecha_desde,
+      fecha_hasta,
+      created_desde,
+      created_hasta,
+      search,
+      page: parsedPage,
+      limit: parsedLimit,
+    };
+
+    const filters = Object.fromEntries(
+      Object.entries(rawFilters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+    );
+
+    const result = await ordersRepository.getAll(filters);
+
+    return res.status(200).json(result);
   } catch (error) {
     console.error('[orders.controller][getAll]', error);
     return res.status(500).json({ message: 'Error al obtener pedidos' });

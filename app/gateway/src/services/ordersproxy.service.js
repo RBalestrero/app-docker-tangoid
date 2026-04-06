@@ -12,13 +12,23 @@ const getOrdersTest = async () => {
   }
 };
 
-const getOrders = async () => {
+const getOrders = async (query = {}) => {
   try {
-    const response = await axios.get(`${ORDERS_SERVICE_URL}/orders`);
+    const cleanQuery = Object.fromEntries(
+      Object.entries(query).filter(
+        ([_, value]) => value !== undefined && value !== null && value !== ''
+      )
+    );
+
+    const response = await axios.get(
+      `${ORDERS_SERVICE_URL}/orders`,
+      { params: cleanQuery }
+    );
+
     return response.data;
   } catch (error) {
     console.error('Error fetching orders:', error);
-    throw error;
+    throw error.response?.data || error;
   }
 };
 

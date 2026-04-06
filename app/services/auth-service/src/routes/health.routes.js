@@ -2,8 +2,8 @@ import Router from 'express';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-  res.json({ service: 'auth-service', status: 'ok' });
+router.get("/", (req, res) => {
+  res.status(200).json({ status: "ok", service: "auth-service" });
 });
 
 export default router;

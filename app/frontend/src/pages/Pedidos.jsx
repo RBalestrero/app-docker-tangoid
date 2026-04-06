@@ -76,41 +76,71 @@ function Pedidos() {
   const [orders, setOrders] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const [ordersError, setOrdersError] = useState('');
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 10,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
 
   useEffect(() => {
     const loadOrders = async () => {
+      if (activeTab !== 'pendientes') return;
+
       try {
         setLoadingOrders(true);
         setOrdersError('');
 
-        const response = await getOrders();
+        const response = await getOrders({
+          page: pagination.page,
+          limit: pagination.limit,
+        });
 
-        const normalizedOrders = Array.isArray(response)
-          ? response.map((order, index) => ({
-              ...order,
-              _rowId:
-                order.id ??
-                order._id ??
-                order.uuid ??
-                order.numero_remito ??
-                order.numero_factura ??
-                `pedido-${index}`,
-              ejecutivo_cuenta: `${order.ejecutivo_nombre || ''} ${order.ejecutivo_apellido || ''}`.trim(),
-            }))
-          : [];
+        const rawOrders = Array.isArray(response?.data) ? response.data : [];
+
+        const normalizedOrders = rawOrders.map((order, index) => ({
+          ...order,
+          _rowId:
+            order.id ??
+            order._id ??
+            order.uuid ??
+            order.numero_remito ??
+            order.numero_factura ??
+            `pedido-${pagination.page}-${index}`,
+          ejecutivo_cuenta: `${order.ejecutivo_nombre || ''} ${order.ejecutivo_apellido || ''}`.trim(),
+        }));
 
         setOrders(normalizedOrders);
+
+        setPagination((prev) => ({
+          ...prev,
+          total: response?.meta?.total ?? 0,
+          page: response?.meta?.page ?? prev.page,
+          limit: response?.meta?.limit ?? prev.limit,
+          totalPages: response?.meta?.totalPages ?? 1,
+          hasNextPage: response?.meta?.hasNextPage ?? false,
+          hasPrevPage: response?.meta?.hasPrevPage ?? false,
+        }));
       } catch (error) {
         console.error('Error cargando pedidos:', error);
         setOrdersError('No se pudieron cargar los pedidos.');
         setOrders([]);
+        setPagination((prev) => ({
+          ...prev,
+          total: 0,
+          totalPages: 1,
+          hasNextPage: false,
+          hasPrevPage: false,
+        }));
       } finally {
         setLoadingOrders(false);
       }
     };
 
     loadOrders();
-  }, []);
+  }, [activeTab, pagination.page, pagination.limit]);
 
   const handleVer = (row) => {
     console.log('Ver registro:', row);
@@ -122,6 +152,30 @@ function Pedidos() {
 
   const handleEliminar = (row) => {
     console.log('Eliminar registro:', row);
+  };
+
+  const handlePrevPage = () => {
+    setPagination((prev) => ({
+      ...prev,
+      page: Math.max(prev.page - 1, 1),
+    }));
+  };
+
+  const handleNextPage = () => {
+    setPagination((prev) => ({
+      ...prev,
+      page: prev.hasNextPage ? prev.page + 1 : prev.page,
+    }));
+  };
+
+  const handleLimitChange = (event) => {
+    const newLimit = Number(event.target.value) || 10;
+
+    setPagination((prev) => ({
+      ...prev,
+      page: 1,
+      limit: newLimit,
+    }));
   };
 
   const pedidosColumns = useMemo(
@@ -366,9 +420,9 @@ function Pedidos() {
     () =>
       tabs.map((tab) => ({
         ...tab,
-        count: tab.id === 'pendientes' ? orders.length : 0,
+        count: tab.id === 'pendientes' ? pagination.total : 0,
       })),
-    [orders.length]
+    [pagination.total]
   );
 
   return (
@@ -401,26 +455,90 @@ function Pedidos() {
 
           <div className="pedidos-table-wrapper">
             <TableCard title={currentConfig.title}>
+              {activeTab === 'pendientes' && (
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-3 pt-3">
+                  <div className="text-muted small">
+                    {pagination.total > 0 ? (
+                      <>
+                        Mostrando página <strong>{pagination.page}</strong> de{' '}
+                        <strong>{pagination.totalPages}</strong> — Total de registros:{' '}
+                        <strong>{pagination.total}</strong>
+                      </>
+                    ) : (
+                      'Sin registros'
+                    )}
+                  </div>
+
+                  <div className="d-flex align-items-center gap-2">
+                    <label htmlFor="pedidos-limit" className="small text-muted mb-0">
+                      Mostrar
+                    </label>
+                    <select
+                      id="pedidos-limit"
+                      className="form-select form-select-sm"
+                      style={{ width: '90px' }}
+                      value={pagination.limit}
+                      onChange={handleLimitChange}
+                    >
+                      <option value={10}>10</option>
+                      <option value={20}>20</option>
+                      <option value={50}>50</option>
+                      <option value={100}>100</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
               {activeTab === 'pendientes' && loadingOrders ? (
                 <div className="p-4 text-center">Cargando pedidos...</div>
               ) : activeTab === 'pendientes' && ordersError ? (
                 <div className="p-4 text-center text-danger">{ordersError}</div>
               ) : (
-                <DataTable
-                  columns={currentConfig.columns}
-                  data={currentConfig.rows}
-                  expandable={activeTab === 'pendientes'}
-                  renderExpandedRow={currentConfig.renderExpandedRow}
-                  getRowId={(row, index) =>
-                    row._rowId ??
-                    row.id ??
-                    row._id ??
-                    row.uuid ??
-                    row.numero_remito ??
-                    row.numero_factura ??
-                    `pedido-${index}`
-                  }
-                />
+                <>
+                  <DataTable
+                    columns={currentConfig.columns}
+                    data={currentConfig.rows}
+                    expandable={activeTab === 'pendientes'}
+                    renderExpandedRow={currentConfig.renderExpandedRow}
+                    getRowId={(row, index) =>
+                      row._rowId ??
+                      row.id ??
+                      row._id ??
+                      row.uuid ??
+                      row.numero_remito ??
+                      row.numero_factura ??
+                      `pedido-${index}`
+                    }
+                  />
+
+                  {activeTab === 'pendientes' && (
+                    <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-3 py-3 border-top">
+                      <div className="small text-muted">
+                        Página {pagination.page} de {pagination.totalPages}
+                      </div>
+
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={handlePrevPage}
+                          disabled={!pagination.hasPrevPage || loadingOrders}
+                        >
+                          Anterior
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-primary"
+                          onClick={handleNextPage}
+                          disabled={!pagination.hasNextPage || loadingOrders}
+                        >
+                          Siguiente
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </TableCard>
           </div>

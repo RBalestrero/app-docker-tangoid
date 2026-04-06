@@ -41,7 +41,8 @@ BEGIN
             'soporte',
             'comercial',
             'administrativo',
-            'invitado'
+            'invitado',
+            'gerencia'
         );
     END IF;
 END$$;

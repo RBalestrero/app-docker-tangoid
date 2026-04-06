@@ -9,7 +9,7 @@ VALUES
 ('Luis', 'Martinez', 'luis.martinez@empresa.com', 'administrador', 'passwVord123', 'salt123'),
 ('Carla', 'Lopez', 'carla.lopez@empresa.com', 'deposito', 'pasVsword123', 'salt123'),
 ('Diego', 'Fernandez', 'diego.fernandez@empresa.com', 'deposito', 'passwVord123', 'salt123'),
-('Sofia', 'Ruiz', 'sofia.ruiz@empresa.com', 'soporte', 'passworVd123', 'salt123');
+('Sofia', 'Ruiz', 'sofia.ruiz@empresa.com', 'gerencia', 'passworVd123', 'salt123');
 
 -- =========================
 -- SEED DATA - ORDERS

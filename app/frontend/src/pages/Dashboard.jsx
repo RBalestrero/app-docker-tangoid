@@ -1,4 +1,3 @@
-import Navbar from '../components/Navbar';
 import { useAuth } from '../context/AuthContext';
 
 function Dashboard() {
@@ -6,8 +5,6 @@ function Dashboard() {
 
   return (
     <>
-      <Navbar />
-
       <div className="container py-5">
         <div className="card shadow-sm border-0">
           <div className="card-body">

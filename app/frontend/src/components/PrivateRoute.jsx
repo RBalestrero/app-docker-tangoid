@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Navbar from './Navbar';
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loadingAuth } = useAuth();
@@ -15,7 +16,18 @@ function PrivateRoute({ children }) {
     );
   }
 
-  return isAuthenticated ? children : <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return (
+    <>
+      <Navbar />
+      <main className="app-content py-4">
+        {children}
+      </main>
+    </>
+  );
 }
 
 export default PrivateRoute;

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
+import Pedidos from './pages/Pedidos';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -16,6 +17,15 @@ function App() {
         element={
           <PrivateRoute>
             <Dashboard />
+          </PrivateRoute>
+        }
+      />
+
+      <Route
+        path="/pedidos"
+        element={
+          <PrivateRoute>
+            <Pedidos />
           </PrivateRoute>
         }
       />

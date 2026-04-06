@@ -3,8 +3,16 @@ body {
   min-height: 100vh;
 }
 
+#root {
+  min-height: 100vh;
+}
+
 .auth-page {
   min-height: 100vh;
+}
+
+.app-content {
+  min-height: calc(100vh - 72px);
 }
 
 .card {
@@ -15,4 +23,18 @@ body {
 .form-select,
 .btn {
   border-radius: 0.75rem;
+}
+
+.navbar .nav-link {
+  border-radius: 0.65rem;
+  padding: 0.5rem 0.85rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.navbar .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+.navbar .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.16);
 }

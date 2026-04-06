@@ -1,12 +1,27 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 
-function DataTable({ columns, data, renderExpandedRow, expandable = false }) {
+function DataTable({
+  columns,
+  data,
+  renderExpandedRow,
+  expandable = false,
+  getRowId,
+}) {
   const [expandedRowId, setExpandedRowId] = useState(null);
 
-  const handleRowClick = (row) => {
+  const resolveRowId = (row, rowIndex) => {
+    if (typeof getRowId === 'function') {
+      return getRowId(row, rowIndex);
+    }
+
+    return row.id ?? row._id ?? row.numero_remito ?? `row-${rowIndex}`;
+  };
+
+  const handleRowClick = (row, rowIndex) => {
     if (!expandable) return;
 
-    setExpandedRowId((prev) => (prev === row.id ? null : row.id));
+    const rowId = resolveRowId(row, rowIndex);
+    setExpandedRowId((prev) => (prev === rowId ? null : rowId));
   };
 
   return (
@@ -34,14 +49,14 @@ function DataTable({ columns, data, renderExpandedRow, expandable = false }) {
             </tr>
           ) : (
             data.map((row, rowIndex) => {
-              const isExpanded = expandedRowId === row.id;
+              const rowId = resolveRowId(row, rowIndex);
+              const isExpanded = expandedRowId === rowId;
 
               return (
-                <>
+                <Fragment key={rowId}>
                   <tr
-                    key={row.id || rowIndex}
                     className={`pedidos-clickable-row ${isExpanded ? 'is-expanded' : ''}`}
-                    onClick={() => handleRowClick(row)}
+                    onClick={() => handleRowClick(row, rowIndex)}
                     style={{ cursor: expandable ? 'pointer' : 'default' }}
                   >
                     {columns.map((col, colIndex) => (
@@ -70,7 +85,7 @@ function DataTable({ columns, data, renderExpandedRow, expandable = false }) {
                       </td>
                     </tr>
                   )}
-                </>
+                </Fragment>
               );
             })
           )}

@@ -30,29 +30,6 @@ app.use(
 app.use(express.json());
 app.use(requestLogger);
 
-let count = 0;
-app.use((req, res, next) => {
-
-  if (req.path === "/health") return next();
-
-  const isHealthCheck =
-    req.url === "/health" &&
-    req.headers["user-agent"]?.includes("Wget");
-
-  if (isHealthCheck) {
-    return next();
-  }
-
-  count++;
-  req.log.info({
-    origin: req.headers.origin,
-    body: req.body,
-    contentType: req.headers["content-type"],
-    requestCount: count,
-  });
-
-  next();
-});
 
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "ok", service: "gateway" });

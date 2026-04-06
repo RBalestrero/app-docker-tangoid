@@ -1,35 +1,49 @@
-import pinoHttp from "pino-http";
 import logger from "../utils/logger.js";
-import crypto from "crypto";
 
-const requestLogger = pinoHttp({
-  logger,
-  genReqId: (req) => req.headers["x-request-id"] || crypto.randomUUID(),
-  customLogLevel: (req, res, err) => {
-    if (err || res.statusCode >= 500) return "error";
-    if (res.statusCode >= 400) return "warn";
-    return "info";
-  },
-  customSuccessMessage: (req, res) => {
-    return `${req.method} ${req.originalUrl} completed`;
-  },
-  customErrorMessage: (req, res, err) => {
-    return `${req.method} ${req.originalUrl} failed: ${err.message}`;
-  },
-  serializers: {
-    req: (req) => ({
-      id: req.id,
-      method: req.method,
-      url: req.url,
-      params: req.params,
-      query: req.query,
+export default function requestLogger(req, res, next) {
+  if (req.path === "/health") {
+    return next();
+  }
+
+  const start = Date.now();
+  const requestId = req.id || crypto.randomUUID?.() || `req-${Date.now()}`;
+
+  logger.info(
+    {
+      service: req.headers["x-service-name"] || "gateway",
+      req: {
+        id: requestId,
+        method: req.method,
+        url: req.originalUrl || req.url,
+        params: req.params,
+        query: req.query,
+        headers: req.headers,
+      },
       body: req.body,
-      headers: req.headers,
-    }),
-    res: (res) => ({
-      statusCode: res.statusCode,
-    }),
-  },
-});
+    },
+    "Incoming request"
+  );
 
-export default requestLogger;
+  res.on("finish", () => {
+    logger.info(
+      {
+        service: req.headers["x-service-name"] || "gateway",
+        req: {
+          id: requestId,
+          method: req.method,
+          url: req.originalUrl || req.url,
+          params: req.params,
+          query: req.query,
+          headers: req.headers,
+        },
+        res: {
+          statusCode: res.statusCode,
+        },
+        responseTime: Date.now() - start,
+      },
+      `${req.method} ${req.originalUrl || req.url} completed`
+    );
+  });
+
+  next();
+}

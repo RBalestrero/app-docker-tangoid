@@ -23,7 +23,6 @@ const [filters, setFilters] = useState({
 
 export const getOrders = async (params = {}) => {
   try {
-    // Limpia parámetros vacíos (clave)
     const cleanParams = Object.fromEntries(
       Object.entries(params).filter(
         ([_, value]) => value !== undefined && value !== null && value !== ''
@@ -37,6 +36,16 @@ export const getOrders = async (params = {}) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching orders:', error);
+    throw error.response?.data || error;
+  }
+};
+
+export const createOrder = async (payload) => {
+  try {
+    const response = await axiosClient.post('/orders', payload);
+    return response.data;
+  } catch (error) {
+    console.error('Error creating order:', error);
     throw error.response?.data || error;
   }
 };

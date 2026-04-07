@@ -1,34 +1,34 @@
-import ordersRepository from '../repositories/orders.repository.js';
+import ordersRepository from "../repositories/orders.repository.js";
 
-const allowedStates = ['Precarga', 'Preparando', 'Hecho', 'Despachado'];
+const allowedStates = ["Precarga", "Preparando", "Hecho", "Despachado"];
 
 function validateRequiredFields(body) {
   const requiredFields = [
-    'fecha',
-    'razon_social',
-    'ejecutivo_cuenta_id',
-    'plataforma_venta',
-    'numero_remito',
-    'numero_factura',
-    'tipo_envio_retiro',
+    "fecha",
+    "razon_social",
+    "ejecutivo_cuenta_id",
+    "plataforma_venta",
+    "numero_remito",
+    "numero_factura",
+    "tipo_envio_retiro",
   ];
 
   const missing = requiredFields.filter((field) => {
     const value = body[field];
-    return value === undefined || value === null || value === '';
+    return value === undefined || value === null || value === "";
   });
 
   return missing;
 }
 
 function validateEstado(estado) {
-  if (estado === undefined || estado === null || estado === '') {
+  if (estado === undefined || estado === null || estado === "") {
     return null;
   }
 
   if (!allowedStates.includes(estado)) {
     return {
-      message: 'Estado inválido',
+      message: "Estado inválido",
       allowedStates,
     };
   }
@@ -39,12 +39,11 @@ function validateEstado(estado) {
 async function getAll(req, res) {
   try {
     const {
-      page = '1',
-      limit = '20',
+      page = "1",
+      limit = "20",
       estado,
       tipo_envio_retiro,
       plataforma_venta,
-      ejecutivo_cuenta_id,
       numero_remito,
       numero_factura,
       external_id,
@@ -53,16 +52,16 @@ async function getAll(req, res) {
       created_desde,
       created_hasta,
       search,
+      ejecutivo,
     } = req.query;
 
     const parsedPage = Math.max(parseInt(page, 10) || 1, 1);
     const parsedLimit = Math.min(Math.max(parseInt(limit, 10) || 20, 1), 100);
 
-    const rawFilters = {
+    const filters = {
       estado,
       tipo_envio_retiro,
       plataforma_venta,
-      ejecutivo_cuenta_id,
       numero_remito,
       numero_factura,
       external_id,
@@ -71,20 +70,20 @@ async function getAll(req, res) {
       created_desde,
       created_hasta,
       search,
+      ejecutivo,
       page: parsedPage,
       limit: parsedLimit,
     };
-
-    const filters = Object.fromEntries(
-      Object.entries(rawFilters).filter(([_, value]) => value !== undefined && value !== null && value !== '')
-    );
 
     const result = await ordersRepository.getAll(filters);
 
     return res.status(200).json(result);
   } catch (error) {
-    console.error('[orders.controller][getAll]', error);
-    return res.status(500).json({ message: 'Error al obtener pedidos' });
+    console.error("[orders.controller][getAll]", error.message, error.stack);
+    return res.status(500).json({
+      message: "Error al obtener pedidos",
+      detail: error.message,
+    });
   }
 }
 
@@ -94,13 +93,13 @@ async function getById(req, res) {
     const order = await ordersRepository.getById(id);
 
     if (!order) {
-      return res.status(404).json({ message: 'Pedido no encontrado' });
+      return res.status(404).json({ message: "Pedido no encontrado" });
     }
 
     return res.status(200).json(order);
   } catch (error) {
-    console.error('[orders.controller][getById]', error);
-    return res.status(500).json({ message: 'Error al obtener pedido' });
+    console.error("[orders.controller][getById]", error);
+    return res.status(500).json({ message: "Error al obtener pedido" });
   }
 }
 
@@ -123,15 +122,17 @@ async function create(req, res) {
     const created = await ordersRepository.create(req.body);
     return res.status(201).json(created);
   } catch (error) {
-    console.error('[orders.controller][create]', error);
+    console.error('[orders.controller][create]', error.message, error.stack);
 
     if (error.code === '23503') {
       return res.status(400).json({
-        message: 'Uno de los user_id enviados no existe en users',
+        message: 'El usuario seleccionado no existe o no es válido.',
       });
     }
 
-    return res.status(500).json({ message: 'Error al crear pedido' });
+    return res.status(500).json({
+      message: 'Error al crear pedido',
+    });
   }
 }
 
@@ -142,7 +143,7 @@ async function update(req, res) {
 
     if (missing.length) {
       return res.status(400).json({
-        message: 'Faltan campos obligatorios',
+        message: "Faltan campos obligatorios",
         missing,
       });
     }
@@ -155,20 +156,20 @@ async function update(req, res) {
     const updated = await ordersRepository.update(id, req.body);
 
     if (!updated) {
-      return res.status(404).json({ message: 'Pedido no encontrado' });
+      return res.status(404).json({ message: "Pedido no encontrado" });
     }
 
     return res.status(200).json(updated);
   } catch (error) {
-    console.error('[orders.controller][update]', error);
+    console.error("[orders.controller][update]", error);
 
-    if (error.code === '23503') {
+    if (error.code === "23503") {
       return res.status(400).json({
-        message: 'Uno de los user_id enviados no existe en users',
+        message: "Uno de los user_id enviados no existe en users",
       });
     }
 
-    return res.status(500).json({ message: 'Error al actualizar pedido' });
+    return res.status(500).json({ message: "Error al actualizar pedido" });
   }
 }
 
@@ -178,16 +179,16 @@ async function remove(req, res) {
     const deleted = await ordersRepository.remove(id);
 
     if (!deleted) {
-      return res.status(404).json({ message: 'Pedido no encontrado' });
+      return res.status(404).json({ message: "Pedido no encontrado" });
     }
 
     return res.status(200).json({
-      message: 'Pedido eliminado',
+      message: "Pedido eliminado",
       id: deleted.id,
     });
   } catch (error) {
-    console.error('[orders.controller][remove]', error);
-    return res.status(500).json({ message: 'Error al eliminar pedido' });
+    console.error("[orders.controller][remove]", error);
+    return res.status(500).json({ message: "Error al eliminar pedido" });
   }
 }
 

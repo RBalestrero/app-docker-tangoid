@@ -1,0 +1,14 @@
+.pedidos-modal-overlay {
+  background: rgba(15, 23, 42, 0.18);
+}
+
+.pedidos-modal-overlay .modal-content {
+  border: 1px solid var(--pedidos-border);
+  border-radius: 18px;
+  box-shadow: var(--pedidos-shadow);
+}
+
+.pedidos-modal-overlay .modal-header,
+.pedidos-modal-overlay .modal-footer {
+  border-color: var(--pedidos-border);
+}

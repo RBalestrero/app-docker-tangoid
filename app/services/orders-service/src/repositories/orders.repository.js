@@ -1,4 +1,4 @@
-import pool from '../config/db.js';
+import pool from "../config/db.js";
 
 const baseSelect = `
   SELECT
@@ -49,21 +49,25 @@ function buildWhereClause(filters = {}) {
   const values = [];
 
   if (filters.estado) {
-    values.push(filters.estado);
-    conditions.push(`o.estado = $${values.length}`);
+    values.push(String(filters.estado));
+    conditions.push(`CAST(o.estado AS TEXT) = $${values.length}`);
   }
 
   if (filters.tipo_envio_retiro) {
-    values.push(filters.tipo_envio_retiro);
-    conditions.push(`o.tipo_envio_retiro = $${values.length}`);
+    values.push(String(filters.tipo_envio_retiro));
+    conditions.push(`CAST(o.tipo_envio_retiro AS TEXT) = $${values.length}`);
   }
 
   if (filters.plataforma_venta) {
-    values.push(filters.plataforma_venta);
-    conditions.push(`o.plataforma_venta = $${values.length}`);
+    values.push(String(filters.plataforma_venta));
+    conditions.push(`CAST(o.plataforma_venta AS TEXT) = $${values.length}`);
   }
 
-  if (filters.ejecutivo_cuenta_id !== undefined && filters.ejecutivo_cuenta_id !== null && filters.ejecutivo_cuenta_id !== '') {
+  if (
+    filters.ejecutivo_cuenta_id !== undefined &&
+    filters.ejecutivo_cuenta_id !== null &&
+    filters.ejecutivo_cuenta_id !== ""
+  ) {
     values.push(Number(filters.ejecutivo_cuenta_id));
     conditions.push(`o.ejecutivo_cuenta_id = $${values.length}`);
   }
@@ -108,27 +112,40 @@ function buildWhereClause(filters = {}) {
     const searchParam = `$${values.length}`;
 
     conditions.push(`
-      (
-        o.razon_social ILIKE ${searchParam}
-        OR o.numero_remito ILIKE ${searchParam}
-        OR o.numero_factura ILIKE ${searchParam}
-        OR o.destinatario ILIKE ${searchParam}
-        OR o.nombre_apellido ILIKE ${searchParam}
-        OR o.guia_direccion ILIKE ${searchParam}
-        OR o.transporte ILIKE ${searchParam}
-        OR o.estado ILIKE ${searchParam}
-        OR o.tipo_envio_retiro ILIKE ${searchParam}
-        OR o.plataforma_venta ILIKE ${searchParam}
-        OR u.nombre ILIKE ${searchParam}
-        OR u.apellido ILIKE ${searchParam}
-        OR CONCAT(u.nombre, ' ', u.apellido) ILIKE ${searchParam}
-      )
-    `);
+    (
+      COALESCE(o.razon_social, '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.numero_remito AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.numero_factura AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(o.destinatario, '') ILIKE ${searchParam}
+      OR COALESCE(o.nombre_apellido, '') ILIKE ${searchParam}
+      OR COALESCE(o.guia_direccion, '') ILIKE ${searchParam}
+      OR COALESCE(o.transporte, '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.estado AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.tipo_envio_retiro AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.plataforma_venta AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(CAST(o.external_id AS TEXT), '') ILIKE ${searchParam}
+      OR COALESCE(u.nombre, '') ILIKE ${searchParam}
+      OR COALESCE(u.apellido, '') ILIKE ${searchParam}
+      OR CONCAT(COALESCE(u.nombre, ''), ' ', COALESCE(u.apellido, '')) ILIKE ${searchParam}
+    )
+  `);
   }
 
-  const whereClause = conditions.length > 0
-    ? `WHERE ${conditions.join(' AND ')}`
-    : '';
+  if (filters.ejecutivo) {
+    values.push(`%${filters.ejecutivo}%`);
+    const ejecutivoParam = `$${values.length}`;
+
+    conditions.push(`
+    (
+      COALESCE(u.nombre, '') ILIKE ${ejecutivoParam}
+      OR COALESCE(u.apellido, '') ILIKE ${ejecutivoParam}
+      OR CONCAT(COALESCE(u.nombre, ''), ' ', COALESCE(u.apellido, '')) ILIKE ${ejecutivoParam}
+    )
+  `);
+  }
+
+  const whereClause =
+    conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
 
   return { whereClause, values };
 }
@@ -235,7 +252,7 @@ async function create(data) {
     data.numero_remito,
     data.numero_factura,
     data.tipo_envio_retiro,
-    data.estado ?? 'Precarga',
+    data.estado ?? "Precarga",
     data.metodo_envio_retiro ?? null,
     data.nombre_apellido ?? null,
     data.dni_cuit_puerta ?? null,
@@ -312,7 +329,7 @@ async function update(id, data) {
     data.numero_remito,
     data.numero_factura,
     data.tipo_envio_retiro,
-    data.estado ?? 'Precarga',
+    data.estado ?? "Precarga",
     data.metodo_envio_retiro ?? null,
     data.nombre_apellido ?? null,
     data.dni_cuit_puerta ?? null,

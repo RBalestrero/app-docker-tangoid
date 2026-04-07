@@ -1,4 +1,4 @@
-import { useState, Fragment } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 
 function DataTable({
   columns,
@@ -8,6 +8,10 @@ function DataTable({
   getRowId,
 }) {
   const [expandedRowId, setExpandedRowId] = useState(null);
+
+  useEffect(() => {
+    setExpandedRowId(null);
+  }, [data]);
 
   const resolveRowId = (row, rowIndex) => {
     if (typeof getRowId === 'function') {

@@ -268,3 +268,208 @@
     min-height: auto;
   }
 }
+
+/* =========================
+   Header compacto
+========================= */
+
+.pedidos-header-compact {
+  padding: 16px 18px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+}
+
+.pedidos-header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.pedidos-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.pedidos-kicker {
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+.pedidos-title {
+  font-size: 1.45rem;
+  line-height: 1.1;
+}
+
+.pedidos-subtitle {
+  margin-top: 6px;
+  font-size: 0.86rem;
+  line-height: 1.35;
+  max-width: 720px;
+}
+
+/* =========================
+   Botones compactos
+========================= */
+
+.pedidos-btn-compact {
+  padding: 0.42rem 0.75rem;
+  font-size: 0.82rem;
+  border-radius: 10px;
+}
+
+/* =========================
+   Filtros compactos
+========================= */
+
+.pedidos-filters-compact {
+  margin-bottom: 14px !important;
+  border-radius: 14px;
+}
+
+.pedidos-filters-body {
+  padding: 12px 14px;
+}
+
+.pedidos-filter-label {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--pedidos-muted);
+  line-height: 1.2;
+}
+
+.pedidos-filter-control {
+  min-height: 34px;
+  font-size: 0.84rem;
+  border-radius: 9px;
+}
+
+.pedidos-filter-control::placeholder {
+  font-size: 0.82rem;
+}
+
+/* achica un poco el grid visual del formulario */
+.pedidos-filters .row.g-2 {
+  --bs-gutter-x: 0.55rem;
+  --bs-gutter-y: 0.55rem;
+}
+
+/* =========================
+   Panel y card más compactos
+========================= */
+
+.pedidos-panel {
+  padding: 14px;
+  border-radius: 18px;
+}
+
+.pedidos-card {
+  border-radius: 14px;
+}
+
+.pedidos-card-header {
+  padding: 12px 14px;
+}
+
+.pedidos-card-header h2 {
+  font-size: 1.05rem;
+}
+
+/* =========================
+   Tabs más compactas
+========================= */
+
+.pedidos-tabs {
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.pedidos-tab {
+  padding: 9px 12px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  gap: 8px;
+}
+
+.pedidos-tab-count {
+  min-width: 24px;
+  height: 24px;
+  font-size: 11px;
+  padding: 0 6px;
+}
+
+/* =========================
+   Tabla y paginación compactas
+========================= */
+
+.pedidos-table thead th {
+  font-size: 0.76rem;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.pedidos-table tbody td {
+  font-size: 0.84rem;
+  padding-top: 9px;
+  padding-bottom: 9px;
+}
+
+.pedidos-expanded-content {
+  padding: 10px 12px;
+}
+
+.pedidos-detail-grid {
+  gap: 8px;
+}
+
+.pedidos-detail-item {
+  padding: 8px 10px;
+  min-height: 56px;
+  border-radius: 10px;
+}
+
+.pedidos-detail-label {
+  font-size: 0.66rem;
+}
+
+.pedidos-detail-value {
+  font-size: 0.84rem;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 768px) {
+  .pedidos-header-compact {
+    padding: 14px;
+  }
+
+  .pedidos-title {
+    font-size: 1.25rem;
+  }
+
+  .pedidos-subtitle {
+    font-size: 0.8rem;
+  }
+
+  .pedidos-header-actions {
+    width: 100%;
+  }
+
+  .pedidos-header-actions .pedidos-btn-compact {
+    width: 100%;
+  }
+
+  .pedidos-filters-body {
+    padding: 10px 12px;
+  }
+
+  .pedidos-panel {
+    padding: 12px;
+  }
+}

@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import Login from './pages/Login';
 import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
-import Pedidos from './pages/Pedidos';
+import { PedidosPage } from './features/pedidos';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
@@ -25,7 +25,7 @@ function App() {
         path="/pedidos"
         element={
           <PrivateRoute>
-            <Pedidos />
+            <PedidosPage />
           </PrivateRoute>
         }
       />

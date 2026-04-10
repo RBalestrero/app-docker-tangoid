@@ -1,0 +1,11 @@
+:root {
+  --pedidos-primary: #123c66;
+  --pedidos-primary-hover: #184d81;
+  --pedidos-primary-soft: #eaf1f8;
+  --pedidos-bg: #f4f7fb;
+  --pedidos-card: #ffffff;
+  --pedidos-border: #d8e1ea;
+  --pedidos-text: #1d3142;
+  --pedidos-muted: #6b7d8d;
+  --pedidos-shadow: 0 10px 30px rgba(18, 60, 102, 0.08);
+}

@@ -1,0 +1,115 @@
+.table {
+  margin: 0;
+  table-layout: auto;
+  width: 100%;
+}
+
+.headerCell {
+  background: #f6f9fc;
+  color: var(--color-muted, #6b7280);
+  font-size: 0.76rem;
+  font-weight: 700;
+  border-bottom: 1px solid var(--color-border, #d8e1ea);
+  vertical-align: middle;
+  text-align: center;
+  padding: 10px 12px;
+  min-width: 110px;
+  max-width: 260px;
+  width: 1%;
+  white-space: nowrap;
+}
+
+.bodyCell {
+  font-size: 0.84rem;
+  padding: 9px 12px;
+  color: var(--color-text, #1d3142);
+  border-color: #edf2f7;
+  vertical-align: middle;
+  text-align: center;
+  min-width: 110px;
+  max-width: 260px;
+  width: 1%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sortableHeader {
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+}
+
+.sortableHeader:hover {
+  background: #eef4fa;
+  color: var(--color-text, #1d3142);
+}
+
+.sortedHeader {
+  background: #edf4fb !important;
+  color: var(--color-primary, #123c66) !important;
+}
+
+.headerContent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.sortIndicator {
+  font-size: 0.78rem;
+  line-height: 1;
+  opacity: 0.45;
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    color 0.18s ease;
+}
+
+.sortableHeader:hover .sortIndicator {
+  opacity: 0.75;
+}
+
+.sortIndicatorActive {
+  opacity: 1;
+  color: var(--color-primary, #123c66);
+}
+
+.expandedClickableRow {
+  background: #f8fbff !important;
+}
+
+.expandedRow td {
+  padding: 0 !important;
+  background: #fcfdff !important;
+  border-bottom: 1px solid var(--color-border, #d8e1ea);
+  white-space: normal !important;
+}
+
+.expandedContent {
+  display: block;
+  width: 100%;
+  padding: 10px 12px;
+  border-top: 1px solid #e8eef5;
+  background: linear-gradient(180deg, #fcfdff 0%, #f7fbff 100%);
+  box-sizing: border-box;
+  text-align: left;
+}
+
+@media (max-width: 768px) {
+  .headerCell,
+  .bodyCell {
+    min-width: 96px;
+    max-width: 220px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .expandedContent {
+    padding: 12px;
+  }
+}

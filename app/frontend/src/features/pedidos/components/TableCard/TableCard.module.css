@@ -1,0 +1,19 @@
+.card {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.header {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, #fbfdff 0%, #f3f8fc 100%);
+}
+
+.title {
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--color-text);
+}
+

@@ -1,0 +1,16 @@
+.label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-text, #1d3142);
+  margin-bottom: 0.35rem;
+}
+
+.control {
+  min-height: 34px;
+  font-size: 0.84rem;
+  border-radius: 9px;
+}
+
+.control::placeholder {
+  font-size: 0.82rem;
+}

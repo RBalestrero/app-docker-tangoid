@@ -7,14 +7,14 @@ export const TABS = [
 export const INITIAL_FILTERS = {
   page: 1,
   limit: 10,
-  search: '',
+  quick_search: '',
   estado: '',
   tipo_envio_retiro: '',
   ejecutivo: '',
 };
 
 export const INITIAL_DRAFT_FILTERS = {
-  search: '',
+  quick_search: '',
   estado: '',
   tipo_envio_retiro: '',
   ejecutivo: '',
@@ -57,9 +57,11 @@ export const DEFAULT_PAGINATION = {
 export const PEDIDO_ESTADOS = [
   'Precarga',
   'Confirmado',
+  'Facturar',
+  'Facturado',
+  'Pagado',
   'Preparado',
   'Despachado',
-  'Pagado',
 ];
 
 export const PEDIDO_TIPOS_ENVIO = ['PUERTA', 'ENCOMIENDA', 'RETIRO'];

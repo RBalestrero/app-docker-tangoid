@@ -1,3 +1,9 @@
+.tableResponsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  position: relative;
+}
+
 .table {
   margin: 0;
   table-layout: auto;

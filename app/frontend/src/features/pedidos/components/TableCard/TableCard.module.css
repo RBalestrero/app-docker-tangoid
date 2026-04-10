@@ -1,19 +1,21 @@
 .card {
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-border, #d8e1ea);
   border-radius: 14px;
-  overflow: hidden;
   background: #fff;
+  overflow: visible;
+  position: relative;
 }
 
 .header {
   padding: 12px 14px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border, #d8e1ea);
   background: linear-gradient(180deg, #fbfdff 0%, #f3f8fc 100%);
+  border-top-left-radius: 14px;
+  border-top-right-radius: 14px;
 }
 
 .title {
   margin: 0;
   font-size: 1.05rem;
-  color: var(--color-text);
+  color: var(--color-text, #1d3142);
 }
-

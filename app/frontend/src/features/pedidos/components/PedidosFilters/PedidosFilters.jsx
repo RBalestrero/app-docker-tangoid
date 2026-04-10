@@ -17,9 +17,9 @@ function PedidosFilters({
             <input
               type="text"
               className={`form-control form-control-sm ${styles.control}`}
-              placeholder="Razón social, remito, factura..."
-              value={draftFilters.search}
-              onChange={(e) => onDraftChange('search', e.target.value)}
+              placeholder="Razón social, remito o factura"
+              value={draftFilters.quick_search}
+              onChange={(e) => onDraftChange('quick_search', e.target.value)}
               onKeyDown={onKeyDown}
             />
           </div>

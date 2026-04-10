@@ -140,6 +140,16 @@
   align-items: stretch;
 }
 
+.pipelineSections {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pipelineBlock {
+  display: block;
+}
+
 @media (max-width: 768px) {
   .header {
     padding: 14px;

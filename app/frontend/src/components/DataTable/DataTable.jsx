@@ -149,7 +149,7 @@ function DataTable({
   };
 
   return (
-    <div className="table-responsive">
+    <div className={styles.tableResponsive}>
       <table className={`table align-middle mb-0 ${styles.table}`}>
         <thead>
           <tr>

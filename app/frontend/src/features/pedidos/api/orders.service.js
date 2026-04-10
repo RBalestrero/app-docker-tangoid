@@ -28,3 +28,15 @@ export const createOrder = async (payload) => {
     throw error.response?.data || error;
   }
 };
+
+export const updateOrderStatus = async (orderId, estado) => {
+  try {
+    const response = await axiosClient.patch(`/orders/${orderId}/status`, {
+      estado,
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error.response?.data || error;
+  }
+};

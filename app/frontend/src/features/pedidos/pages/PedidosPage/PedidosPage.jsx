@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import DataTable from '../../../../components/DataTable/DataTable.jsx';
-import { createOrder, getOrders } from '../../api/orders.service.js';
+import {
+  createOrder,
+  getOrders,
+  updateOrderStatus,
+} from '../../api/orders.service.js';
 import CreateOrderModal from '../../components/CreateOrderModal/CreateOrderModal.jsx';
 import DetailItem from '../../components/DetailItem/DetailItem.jsx';
+import PedidoActionsMenu from '../../components/PedidoActionsMenu/PedidoActionsMenu.jsx';
 import PedidosFilters from '../../components/PedidosFilters/PedidosFilters.jsx';
 import StatusBadge from '../../components/StatusBadge/StatusBadge.jsx';
 import TableCard from '../../components/TableCard/TableCard.jsx';
@@ -13,17 +18,15 @@ import {
   INITIAL_ORDER_FORM,
   TABS,
 } from '../../constants/Pedidos.constants.jsx';
+import { PEDIDO_DETAIL_FIELDS } from '../../constants/pedidos.details.config.js';
 import {
   buildCreateOrderPayload,
-  formatBoolean,
-  formatCurrency,
   formatDate,
-  formatDateTime,
   isVisibleValue,
   normalizeOrders,
   validateCreateOrderForm,
 } from '../../utils/pedidos.formatters.jsx';
-
+import { groupOrdersByPipeline } from '../../utils/pedidos.pipeline.js';
 import styles from './PedidosPage.module.css';
 
 function PedidosPage() {
@@ -89,7 +92,7 @@ function PedidosPage() {
     setFilters((prev) => ({
       ...prev,
       page: 1,
-      search: draftFilters.search,
+      quick_search: draftFilters.quick_search,
       estado: draftFilters.estado,
       tipo_envio_retiro: draftFilters.tipo_envio_retiro,
       ejecutivo: draftFilters.ejecutivo,
@@ -179,15 +182,16 @@ function PedidosPage() {
     }
   };
 
-  const handleVer = (row) => {
-    const rowId =
-      row._rowId ??
-      row.id ??
-      row._id ??
-      row.uuid ??
-      row.numero_remito ??
-      row.numero_factura;
+  const getResolvedRowId = (row) =>
+    row._rowId ??
+    row.id ??
+    row._id ??
+    row.uuid ??
+    row.numero_remito ??
+    row.numero_factura;
 
+  const handleVer = (row) => {
+    const rowId = getResolvedRowId(row);
     setExpandedRowId((prev) => (prev === rowId ? null : rowId));
   };
 
@@ -197,6 +201,22 @@ function PedidosPage() {
 
   const handleEliminar = (row) => {
     console.log('Eliminar registro:', row);
+  };
+
+  const handleChangeOrderStatus = async (row, newStatus) => {
+    try {
+      const orderId = row.id || row._id;
+      if (!orderId) {
+        console.error('No se encontró el ID del pedido para actualizar estado.');
+        return;
+      }
+
+      await updateOrderStatus(orderId, newStatus);
+      setExpandedRowId(null);
+      setReloadKey((prev) => prev + 1);
+    } catch (error) {
+      console.error('Error actualizando estado:', error);
+    }
   };
 
   const pedidosColumns = useMemo(
@@ -258,18 +278,11 @@ function PedidosPage() {
         cellClassName: 'text-center',
         stopRowClick: true,
         render: (_, row) => {
-          const rowId =
-            row._rowId ??
-            row.id ??
-            row._id ??
-            row.uuid ??
-            row.numero_remito ??
-            row.numero_factura;
-
+          const rowId = getResolvedRowId(row);
           const isOpen = expandedRowId === rowId;
 
           return (
-            <div className="d-flex gap-2 justify-content-center flex-wrap">
+            <div className="d-flex gap-2 justify-content-center align-items-center flex-wrap">
               <button
                 type="button"
                 className={`btn btn-sm ${
@@ -279,20 +292,33 @@ function PedidosPage() {
               >
                 {isOpen ? 'Ocultar' : 'Ver'}
               </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-secondary"
-                onClick={() => handleEditar(row)}
-              >
-                Editar
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm btn-outline-danger"
-                onClick={() => handleEliminar(row)}
-              >
-                Eliminar
-              </button>
+
+              <PedidoActionsMenu
+                actions={[
+                  { label: 'Editar', onClick: () => handleEditar(row) },
+                  {
+                    label: 'Pasar a Comercial',
+                    onClick: () => handleChangeOrderStatus(row, 'Confirmado'),
+                  },
+                  {
+                    label: 'Pasar a Facturación',
+                    onClick: () => handleChangeOrderStatus(row, 'Facturar'),
+                  },
+                  {
+                    label: 'Pasar a Logística',
+                    onClick: () => handleChangeOrderStatus(row, 'Preparado'),
+                  },
+                  {
+                    label: 'Marcar despachado',
+                    onClick: () => handleChangeOrderStatus(row, 'Despachado'),
+                  },
+                  {
+                    label: 'Marcar pagado',
+                    onClick: () => handleChangeOrderStatus(row, 'Pagado'),
+                  },
+                  { label: 'Eliminar', onClick: () => handleEliminar(row) },
+                ]}
+              />
             </div>
           );
         },
@@ -309,38 +335,6 @@ function PedidosPage() {
       { key: 'tecnico', label: 'Técnico asignado', sortable: true, sortType: 'string' },
       { key: 'motivo', label: 'Motivo', sortable: true, sortType: 'string' },
       { key: 'venta', label: 'Apto para venta', sortable: true, sortType: 'string' },
-      {
-        key: 'acciones',
-        label: 'Acciones',
-        headerClassName: 'text-center',
-        cellClassName: 'text-center',
-        stopRowClick: true,
-        render: (_, row) => (
-          <div className="d-flex gap-2 justify-content-center flex-wrap">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-primary"
-              onClick={() => handleVer(row)}
-            >
-              Ver
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => handleEditar(row)}
-            >
-              Editar
-            </button>
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-danger"
-              onClick={() => handleEliminar(row)}
-            >
-              Eliminar
-            </button>
-          </div>
-        ),
-      },
     ],
     []
   );
@@ -352,66 +346,21 @@ function PedidosPage() {
 
   const renderPedidoDetails = (row) => (
     <div className={styles.detailGrid}>
-      {isVisibleValue(row.metodo_envio_retiro) && (
-        <DetailItem label="Método de envío/retiro" value={row.metodo_envio_retiro} />
-      )}
-      {isVisibleValue(row.nombre_apellido) && (
-        <DetailItem label="Nombre y apellido" value={row.nombre_apellido} />
-      )}
-      {isVisibleValue(row.destinatario) && (
-        <DetailItem label="Destinatario" value={row.destinatario} />
-      )}
-      {isVisibleValue(row.telefono) && (
-        <DetailItem label="Teléfono" value={row.telefono} />
-      )}
-      {isVisibleValue(row.dni_cuit_encomienda || row.dni_cuit_puerta) && (
-        <DetailItem
-          label="DNI/CUIT"
-          value={row.dni_cuit_encomienda || row.dni_cuit_puerta}
-        />
-      )}
-      {isVisibleValue(row.guia_direccion) && (
-        <DetailItem label="Guía / Dirección" value={row.guia_direccion} wide />
-      )}
-      {isVisibleValue(row.transporte) && (
-        <DetailItem label="Transporte" value={row.transporte} />
-      )}
-      {isVisibleValue(formatCurrency(row.valor_declarado)) && (
-        <DetailItem
-          label="Valor declarado"
-          value={formatCurrency(row.valor_declarado)}
-        />
-      )}
-      {isVisibleValue(row.bultos) && <DetailItem label="Bultos" value={row.bultos} />}
-      {isVisibleValue(formatBoolean(row.paga_envio)) && (
-        <DetailItem label="Paga envío" value={formatBoolean(row.paga_envio)} />
-      )}
-      {isVisibleValue(row.observaciones_deposito) && (
-        <DetailItem
-          label="Observaciones depósito"
-          value={row.observaciones_deposito}
-          wide
-        />
-      )}
-      {isVisibleValue(row.observaciones_transporte) && (
-        <DetailItem
-          label="Observaciones transporte"
-          value={row.observaciones_transporte}
-          wide
-        />
-      )}
-      {isVisibleValue(formatDateTime(row.confirmado_at)) && (
-        <DetailItem label="Confirmado el" value={formatDateTime(row.confirmado_at)} />
-      )}
-      {isVisibleValue(formatDateTime(row.preparado_at)) && (
-        <DetailItem label="Preparado el" value={formatDateTime(row.preparado_at)} />
-      )}
-      {isVisibleValue(formatDateTime(row.despachado_at)) && (
-        <DetailItem label="Despachado el" value={formatDateTime(row.despachado_at)} />
-      )}
-      {isVisibleValue(formatDateTime(row.pagado_at)) && (
-        <DetailItem label="Pagado el" value={formatDateTime(row.pagado_at)} />
-      )}
+      {PEDIDO_DETAIL_FIELDS.map((field) => {
+        const rawValue = field.getValue ? field.getValue(row) : row[field.key];
+        const finalValue = field.format ? field.format(rawValue) : rawValue;
+
+        if (!isVisibleValue(finalValue)) return null;
+
+        return (
+          <DetailItem
+            key={field.key}
+            label={field.label}
+            value={finalValue}
+            wide={field.wide}
+          />
+        );
+      })}
     </div>
   );
 
@@ -425,33 +374,6 @@ function PedidosPage() {
     </div>
   );
 
-  const currentConfig = useMemo(() => {
-    switch (activeTab) {
-      case 'devoluciones':
-        return {
-          title: 'Devoluciones',
-          columns: devolucionesColumns,
-          rows: [],
-          renderExpandedRow: renderEmptySectionDetails,
-        };
-      case 'reservas':
-        return {
-          title: 'Reservas',
-          columns: reservasColumns,
-          rows: [],
-          renderExpandedRow: renderEmptySectionDetails,
-        };
-      case 'pendientes':
-      default:
-        return {
-          title: 'Pedidos',
-          columns: pedidosColumns,
-          rows: orders,
-          renderExpandedRow: renderPedidoDetails,
-        };
-    }
-  }, [activeTab, pedidosColumns, devolucionesColumns, reservasColumns, orders]);
-
   const tabsWithCounts = useMemo(
     () =>
       TABS.map((tab) => ({
@@ -460,6 +382,11 @@ function PedidosPage() {
       })),
     [pagination.total]
   );
+
+  const pipelineSections = useMemo(() => {
+    if (activeTab !== 'pendientes') return [];
+    return groupOrdersByPipeline(orders);
+  }, [activeTab, orders]);
 
   return (
     <div className={styles.page}>
@@ -517,9 +444,9 @@ function PedidosPage() {
           )}
 
           <div className={styles.tableWrapper}>
-            <TableCard title={currentConfig.title}>
-              {activeTab === 'pendientes' && (
-                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-3 pt-3">
+            {activeTab === 'pendientes' ? (
+              <>
+                <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-1 pb-3">
                   <div className="text-muted small">
                     {pagination.total > 0 ? (
                       <>
@@ -550,36 +477,42 @@ function PedidosPage() {
                     </select>
                   </div>
                 </div>
-              )}
 
-              {activeTab === 'pendientes' && loadingOrders ? (
-                <div className="p-4 text-center">Cargando pedidos...</div>
-              ) : activeTab === 'pendientes' && ordersError ? (
-                <div className="p-4 text-center text-danger">{ordersError}</div>
-              ) : (
-                <>
-                  <DataTable
-                    columns={currentConfig.columns}
-                    data={currentConfig.rows}
-                    expandable={activeTab === 'pendientes'}
-                    expandedRowId={expandedRowId}
-                    onToggleExpand={(rowId) =>
-                      setExpandedRowId((prev) => (prev === rowId ? null : rowId))
-                    }
-                    renderExpandedRow={currentConfig.renderExpandedRow}
-                    getRowId={(row, index) =>
-                      row._rowId ??
-                      row.id ??
-                      row._id ??
-                      row.uuid ??
-                      row.numero_remito ??
-                      row.numero_factura ??
-                      `pedido-${index}`
-                    }
-                  />
+                {loadingOrders ? (
+                  <div className="p-4 text-center">Cargando pedidos...</div>
+                ) : ordersError ? (
+                  <div className="p-4 text-center text-danger">{ordersError}</div>
+                ) : (
+                  <>
+                    <div className={styles.pipelineSections}>
+                      {pipelineSections.map((section) => (
+                        <div key={section.id} className={styles.pipelineBlock}>
+                          <TableCard title={`${section.title} (${section.rows.length})`}>
+                            <DataTable
+                              columns={pedidosColumns}
+                              data={section.rows}
+                              expandable
+                              expandedRowId={expandedRowId}
+                              onToggleExpand={(rowId) =>
+                                setExpandedRowId((prev) => (prev === rowId ? null : rowId))
+                              }
+                              renderExpandedRow={renderPedidoDetails}
+                              getRowId={(row, index) =>
+                                row._rowId ??
+                                row.id ??
+                                row._id ??
+                                row.uuid ??
+                                row.numero_remito ??
+                                row.numero_factura ??
+                                `pedido-${index}`
+                              }
+                            />
+                          </TableCard>
+                        </div>
+                      ))}
+                    </div>
 
-                  {activeTab === 'pendientes' && (
-                    <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-3 py-3 border-top">
+                    <div className="d-flex flex-wrap justify-content-between align-items-center gap-3 px-1 pt-3">
                       <div className="small text-muted">
                         Página {pagination.page} de {pagination.totalPages}
                       </div>
@@ -604,10 +537,21 @@ function PedidosPage() {
                         </button>
                       </div>
                     </div>
-                  )}
-                </>
-              )}
-            </TableCard>
+                  </>
+                )}
+              </>
+            ) : (
+              <TableCard
+                title={activeTab === 'devoluciones' ? 'Devoluciones' : 'Reservas'}
+              >
+                <DataTable
+                  columns={activeTab === 'devoluciones' ? devolucionesColumns : reservasColumns}
+                  data={[]}
+                  expandable={false}
+                  renderExpandedRow={renderEmptySectionDetails}
+                />
+              </TableCard>
+            )}
           </div>
         </section>
       </div>
